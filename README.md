@@ -3,7 +3,7 @@
 # ITA_2021
 Repositório do Data Challenge ITA 2021
 
-[Vídeo](https://www.youtube.com/watch?v=qn70jEh_DIk&t=201s&ab_channel=DataScienceChallengeITA)
+[Dicionário dos Dados](https://www.youtube.com/watch?v=qn70jEh_DIk&t=201s&ab_channel=DataScienceChallengeITA)
 
 `19/04 – Início da primeira fase`\
 `20/04 às 16:00 – Abertura oficial`\
