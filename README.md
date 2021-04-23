@@ -7,4 +7,4 @@ Repositório do Data Challenge ITA 2021
 `10/05 – Data limite das inscrições`\
 `17/05 – Encerramento da primeira fase`\
 `24/05 – Início da segunda fase`\
-`29/05 às 9:00 – Encerramento via Google Meet e transmitido pelo Facebook`\
+`29/05 às 9:00 – Encerramento via Google Meet e transmitido pelo Facebook`
