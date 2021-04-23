@@ -1,3 +1,5 @@
+ <img src="https://user-images.githubusercontent.com/53838883/115926239-e7ebce00-a458-11eb-832e-9c5efe3fe16f.png" min-width="400px" max-width="500px" width="350px" top= "0 px" align="right">
+
 # ITA_2021
 Repositório do Data Challenge ITA 2021
 
