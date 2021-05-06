@@ -27,7 +27,7 @@ def prever(X_train, X_test, y_train, y_test, target_name):
     lista_PCA = []
     lista_model = []
     
-    components = [0.8,0.85,0.9,0.95]
+    components = [0.02,0.8,0.85,0.9,0.95,1]
     
     models = [
         LinearRegression(),
@@ -57,20 +57,23 @@ def prever(X_train, X_test, y_train, y_test, target_name):
 
                 pred_cv = clf.predict(X_test)
                 score_cv = mean_absolute_error(y_test, pred_cv)
+                print(f"Melhores parametros: {clf.best_params_}")
                 print(f"\nScore Grid: {score_cv}")
 
-                clf_fit = model
-                params = clf_fit.set_params(**clf.best_params_)
 
-                clf_fit.fit(X_train, y_train)
-                y_pred = clf_fit.predict(X_test)
-                score = mean_absolute_error(y_test, y_pred)
+
+                # clf_fit = model
+                # params = clf_fit.set_params(**clf.best_params_)
+
+                # clf_fit.fit(X_train, y_train)
+                # y_pred = clf_fit.predict(X_test)
+                # score = mean_absolute_error(y_test, y_pred)
                 
-                print(f"Score: {score}")
+                # print(f"Score: {score}")
 
                 lista_model.append(model)
-                lista_params.append(params)
-                lista_scores.append(score)
+                lista_params.append(clf.best_params_)
+                lista_scores.append(score_cv)
                 lista_PCA.append(n)
 
     print("Exportando DataFrame de Scores\n")
@@ -83,6 +86,17 @@ def prever(X_train, X_test, y_train, y_test, target_name):
             
     return df_scores
 
+def geral_resultados_submissao(test, clf_price, clf_trans):
+
+    cent_price_cor = clf_price.predict(test.drop("id", axis=1))
+    cent_trans_cor = clf_trans.predict(test.drop("id", axis=1))
+
+    df_sub = pd.DataFrame({"cent_price_cor": cent_price_cor, "cent_trans_cor": cent_trans_cor})
+    
+    df_sub.to_csv("./../Submissoes/df_sub_{}.csv".format(datetime.now().strftime("%d-%m-%Y_%Hh%Mm%Ss")), index=False)
+
+    return df_sub
+
 
 
 # Execucao do programa
@@ -91,6 +105,11 @@ def prever(X_train, X_test, y_train, y_test, target_name):
 train = pd.read_csv('./../Dados/train.csv')
 test = pd.read_csv('./../Dados/test.csv')
 
+dataframes = [train, test]
+
+for df in dataframes:
+    df['volume']  = df.x * df.y * df.z
+    df['densidade'] = df.volume / df.n
 
 X = train.drop(columns = ['cent_price_cor', 'cent_trans_cor'], axis = 1)
 
@@ -122,6 +141,19 @@ prever(X, X_test, y_trans, y_trans_test, "trans")
 print("\nPrevisao para o Price concluida \n")
 
 prever(X, X_test, y_price, y_price_test, "price")
+
+clf_price = LinearRegression({'fit_intercept': 'True', 'normalize': 'True'})
+clf_price.fit(X, y_price)
+
+clf_trans = LinearRegression({'fit_intercept': 'True', 'normalize': 'True'})
+clf_trans.fit(X, y_trans)
+
+print(X)
+print(test)
+
+df_sub = geral_resultados_submissao(test, clf_price, clf_trans)
+
+print(df_sub)
 
 print("\nPrograma executado com sucesso \n")
 

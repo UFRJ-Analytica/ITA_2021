@@ -1,0 +1,13 @@
+,params,Model,PCA,0
+0,"{'fit_intercept': 'True', 'normalize': 'True'}",LinearRegression(),0.02,0.08995967336220756
+1,"{'fit_intercept': 'True', 'normalize': 'True'}",LinearRegression(),0.8,0.08995967336220756
+2,"{'fit_intercept': 'True', 'normalize': 'True'}",LinearRegression(),0.85,0.08995967336220756
+3,"{'fit_intercept': 'True', 'normalize': 'True'}",LinearRegression(),0.9,0.08995967336220756
+4,"{'fit_intercept': 'True', 'normalize': 'True'}",LinearRegression(),0.95,0.08995967336220756
+5,"{'fit_intercept': 'True', 'normalize': 'True'}",LinearRegression(),1.0,0.08995967336220756
+6,{'alpha': 0.03},Lasso(),0.02,0.0901828336753579
+7,{'alpha': 0.03},Lasso(),0.8,0.0901828336753579
+8,{'alpha': 0.03},Lasso(),0.85,0.0901828336753579
+9,{'alpha': 0.03},Lasso(),0.9,0.0901828336753579
+10,{'alpha': 0.03},Lasso(),0.95,0.0901828336753579
+11,{'alpha': 0.03},Lasso(),1.0,0.0901828336753579
