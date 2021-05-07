@@ -20,13 +20,12 @@ from sklearn.linear_model     import LinearRegression, LogisticRegression, Lasso
 from sklearn.base             import BaseEstimator
 
 
-def prever(X_train, X_test, y_train, y_test, target_name):
+def prever(X_train, X_test, y_train, y_test, target_name, components = [20,21,22,23,24,25,26,27,28]):
     
     lista_scores = []
     lista_PCA = []
-    lista_model = []
-    
-    components = [0.8,0.85,0.9,0.95]
+    lista_params = []
+    lista_models = []
     
     models = [
         LinearRegression(),
@@ -35,43 +34,33 @@ def prever(X_train, X_test, y_train, y_test, target_name):
         Lasso()
         #XGBRegressor()
         ]
+     
+    for n in components:
+        
+        pca = PCA(n_components = n)
+        X_train_PCA = pca.fit_transform(X_train)
+        X_test_PCA = pca.transform(X_test)
             
-    for i, model in enumerate(models):
+        for i, model in enumerate(models):
 
-        for n in components:
-
-            print(f"\n\nModelo: {model}\nComponent: {n}\n\n")
-
-            pca = PCA(n_components = n)
-            X_train_PCA = pca.fit_transform(X_train)
-            X_test_PCA = pca.transform(X_test)
+            print(f"\n\nModelo: {model}\nComponent: {n}\n\n" + str(X_train_PCA.shape) + str(X_test_PCA.shape))
 
             clf = GridSearchCV(model, param_grid = params_grid[i],
-                               scoring = 'neg_mean_absolute_error', #destaque à métrica pedida
+                               scoring = 'neg_mean_absolute_error', #destaque Ã  mÃ©trica pedida
                                n_jobs=2, refit=True, cv=5, verbose=5,
                                pre_dispatch='2*n_jobs', error_score='raise', 
                                return_train_score=True)
+            
+            clf.fit(X_train_PCA, y_train)
 
-            clf.fit(X_train, y_train)
-
-            pred_cv = clf.predict(X_test)
+            pred_cv = clf.predict(X_test_PCA)
             score_cv = mean_absolute_error(y_test, pred_cv)
             print(f"Melhores parametros: {clf.best_params_}")
             print(f"\nScore Grid: {score_cv}")
-
-
-
-            # clf_fit = model
-            # params = clf_fit.set_params(**clf.best_params_)
-
-            # clf_fit.fit(X_train, y_train)
-            # y_pred = clf_fit.predict(X_test)
-            # score = mean_absolute_error(y_test, y_pred)
             
-            # print(f"Score: {score}")
-
             lista_params.append(clf.best_params_)
-            lista_scores.append(score_cv)
+            lista_models.append(model)
+            lista_scores.append(round(score_cv,15))
             lista_PCA.append(n)
 
     print("Exportando DataFrame de Scores\n")
@@ -80,7 +69,8 @@ def prever(X_train, X_test, y_train, y_test, target_name):
     
     df_scores.insert(loc=0, column='PCA', value= pd.Series(lista_PCA))
     df_scores.insert(loc=0, column='Scores', value= pd.Series(lista_scores))
-    df_scores.insert(loc=0, column='Model', value= pd.Series(lista_model))
+    df_scores.insert(loc=0, column='Params', value= pd.Series(lista_params))
+    df_scores.insert(loc=0, column='Model', value= pd.Series(lista_models))
     df_scores.to_csv(f"./../Resultados/{target_name}_scores_"+"{}.csv".format(datetime.now().strftime("%d-%m-%Y_%Hh%Mm%Ss")))
             
     return df_scores
@@ -141,20 +131,20 @@ print("\nPrevisao para o Price concluida \n")
 
 prever(X, X_test, y_price, y_price_test, "price")
 
-#clf_price = LinearRegression({'fit_intercept': 'True', 'normalize': 'True'})
-#clf_price.fit(X, y_price)
+clf_price = LinearRegression({'fit_intercept': 'True', 'normalize': 'True'})
+clf_price.fit(X, y_price)
 
-#clf_trans = LinearRegression({'fit_intercept': 'True', 'normalize': 'True'})
-#clf_trans.fit(X, y_trans)
+clf_trans = LinearRegression({'fit_intercept': 'True', 'normalize': 'True'})
+clf_trans.fit(X, y_trans)
 
-#print(X)
-#print(test)
+print(X)
+print(test)
 
-#df_sub = geral_resultados_submissao(test, clf_price, clf_trans)
+df_sub = geral_resultados_submissao(test, clf_price, clf_trans)
 
-#print(df_sub)
+print(df_sub)
 
-#print("\nPrograma executado com sucesso \n")
+print("\nPrograma executado com sucesso \n")
 
 
 
