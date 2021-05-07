@@ -1,0 +1,9 @@
+,Model,Params,Scores,PCA
+0,,"{'fit_intercept': 'True', 'normalize': 'True'}",0.090183113307337,0.8
+1,,"{'fit_intercept': 'True', 'normalize': 'True'}",0.090183113307337,0.85
+2,,"{'fit_intercept': 'True', 'normalize': 'True'}",0.090183113307337,0.9
+3,,"{'fit_intercept': 'True', 'normalize': 'True'}",0.090183113307337,0.95
+4,,{'alpha': 0.03},0.090183141377915,0.8
+5,,{'alpha': 0.03},0.090183141377915,0.85
+6,,{'alpha': 0.03},0.090183141377915,0.9
+7,,{'alpha': 0.03},0.090183141377915,0.95

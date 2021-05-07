@@ -1,0 +1,3 @@
+,Model,Params,Scores,PCA
+0,LinearRegression(),"{'fit_intercept': 'True', 'normalize': 'True'}",0.090183113307337,0.2
+1,Lasso(),{'alpha': 0.03},0.090183141377915,0.2
