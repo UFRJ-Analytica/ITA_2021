@@ -1,0 +1,19 @@
+,Model,Params,Scores,PCA
+0,LinearRegression(),"{'fit_intercept': 'True', 'normalize': 'True'}",0.093950421380374,20
+1,Lasso(),{'alpha': 0.02},0.094103033593428,20
+2,LinearRegression(),"{'fit_intercept': 'True', 'normalize': 'True'}",0.093949935453886,21
+3,Lasso(),{'alpha': 0.02},0.094103033593428,21
+4,LinearRegression(),"{'fit_intercept': 'True', 'normalize': 'True'}",0.093964721157479,22
+5,Lasso(),{'alpha': 0.02},0.094103033593428,22
+6,LinearRegression(),"{'fit_intercept': 'True', 'normalize': 'True'}",0.09397458004712,23
+7,Lasso(),{'alpha': 0.02},0.094103033593428,23
+8,LinearRegression(),"{'fit_intercept': 'True', 'normalize': 'True'}",0.093977575098804,24
+9,Lasso(),{'alpha': 0.02},0.094103033593428,24
+10,LinearRegression(),"{'fit_intercept': 'True', 'normalize': 'True'}",0.093982138407977,25
+11,Lasso(),{'alpha': 0.02},0.094103033593428,25
+12,LinearRegression(),"{'fit_intercept': 'True', 'normalize': 'True'}",0.093975589571402,26
+13,Lasso(),{'alpha': 0.02},0.094103033593428,26
+14,LinearRegression(),"{'fit_intercept': 'True', 'normalize': 'True'}",0.093967956762663,27
+15,Lasso(),{'alpha': 0.02},0.094103033593428,27
+16,LinearRegression(),"{'fit_intercept': 'True', 'normalize': 'True'}",0.093950406902943,28
+17,Lasso(),{'alpha': 0.02},0.094103033593428,28
