@@ -75,10 +75,17 @@ def prever(X_train, X_test, y_train, y_test, target_name, components = [20,21,22
             
     return df_scores
 
-def geral_resultados_submissao(test, clf_price, clf_trans):
+def geral_resultados_submissao(test_price_pca, test_trans_pca, clf_price, clf_trans):
 
-    cent_price_cor = clf_price.predict(test.drop("id", axis=1))
-    cent_trans_cor = clf_trans.predict(test.drop("id", axis=1))
+    # pca_price = PCA(n_components = n_price)
+    # pca_trans = PCA(n_components = n_price)
+
+    # test_price_PCA = pca_price.fit_transform(test.drop("id", axis=1))
+    # test_trans_PCA = pca_trans.fit_transform(test.drop("id", axis=1))
+    
+    cent_price_cor = clf_price.predict(test_price_PCA)
+    cent_trans_cor = clf_trans.predict(test_trans_PCA)
+
 
     df_sub = pd.DataFrame({"cent_price_cor": cent_price_cor, "cent_trans_cor": cent_trans_cor})
     
@@ -105,6 +112,9 @@ X = train.drop(columns = ['cent_price_cor', 'cent_trans_cor'], axis = 1)
 y_price = train.cent_price_cor
 y_trans = train.cent_trans_cor
 
+
+
+
 X_train, X_test, y_price_train, y_price_test = train_test_split(X,y_price,
                                                     test_size = 0.25,
                                                     random_state = 0)
@@ -125,22 +135,37 @@ params_grid = [
 
 ]
 
-prever(X, X_test, y_trans, y_trans_test, "trans")
+###
 
-print("\nPrevisao para o Price concluida \n")
+#prever(X, X_test, y_trans, y_trans_test, "trans")
 
-prever(X, X_test, y_price, y_price_test, "price")
+#print("\nPrevisao para o Price concluida \n")
+
+#prever(X, X_test, y_price, y_price_test, "price")
+
+###
+
+pca_price = PCA(n_components = 26)
+pca_trans = PCA(n_components = 28)
+
+train_price_PCA = pca_price.fit_transform(X)
+train_trans_PCA = pca_trans.fit_transform(X)
 
 clf_price = LinearRegression({'fit_intercept': 'True', 'normalize': 'True'})
-clf_price.fit(X, y_price)
+clf_price.fit(train_price_PCA, y_price)
 
 clf_trans = LinearRegression({'fit_intercept': 'True', 'normalize': 'True'})
-clf_trans.fit(X, y_trans)
+clf_trans.fit(train_trans_PCA, y_trans)
 
-print(X)
-print(test)
+test_price_PCA = pca_price.fit_transform(test.drop("id", axis=1))
+test_trans_PCA = pca_trans.fit_transform(test.drop("id", axis=1))
 
-df_sub = geral_resultados_submissao(test, clf_price, clf_trans)
+
+# PRICE ==> PCA = 26 // Linear Reg
+
+# TRANS ==> PCA = 28 // Linear Reg
+
+df_sub = geral_resultados_submissao(test_price_PCA, test_trans_PCA, clf_price, clf_trans)
 
 print(df_sub)
 
