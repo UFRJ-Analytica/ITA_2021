@@ -1,0 +1,10 @@
+,Model,Params,Scores,PCA
+0,SVR(),"{'C': 0.1, 'coef0': 0.01, 'degree': 3, 'epsilon': 0.1, 'gamma': 'auto', 'kernel': 'rbf'}",0.073401129960898,20
+1,SVR(),"{'C': 0.1, 'coef0': 0.01, 'degree': 3, 'epsilon': 0.1, 'gamma': 'auto', 'kernel': 'rbf'}",0.073405457357929,21
+2,SVR(),"{'C': 0.1, 'coef0': 0.01, 'degree': 3, 'epsilon': 0.1, 'gamma': 'auto', 'kernel': 'rbf'}",0.07340937641843,22
+3,SVR(),"{'C': 0.1, 'coef0': 0.01, 'degree': 3, 'epsilon': 0.1, 'gamma': 'auto', 'kernel': 'rbf'}",0.073412372016956,23
+4,SVR(),"{'C': 0.1, 'coef0': 0.01, 'degree': 3, 'epsilon': 0.1, 'gamma': 'auto', 'kernel': 'rbf'}",0.073417995101409,24
+5,SVR(),"{'C': 0.1, 'coef0': 0.01, 'degree': 3, 'epsilon': 0.1, 'gamma': 'auto', 'kernel': 'rbf'}",0.073422866307028,25
+6,SVR(),"{'C': 0.1, 'coef0': 0.01, 'degree': 3, 'epsilon': 0.1, 'gamma': 'auto', 'kernel': 'rbf'}",0.073428094459735,26
+7,SVR(),"{'C': 0.1, 'coef0': 0.01, 'degree': 3, 'epsilon': 0.1, 'gamma': 'auto', 'kernel': 'rbf'}",0.07343390784768,27
+8,SVR(),"{'C': 0.1, 'coef0': 0.01, 'degree': 3, 'epsilon': 0.1, 'gamma': 'auto', 'kernel': 'rbf'}",0.073439222541834,28
