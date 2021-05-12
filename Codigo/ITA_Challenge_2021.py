@@ -8,19 +8,57 @@ from   datetime            import datetime
 # Importando Ferramentas de Limpeza
 from sklearn.decomposition    import PCA
 from sklearn.preprocessing    import StandardScaler
-from sklearn.pipeline         import make_pipeline, Pipeline
 
 # Importando Ferramentas de Modelo
 from sklearn.svm              import SVR
 from xgboost                  import XGBRegressor
 from sklearn.model_selection  import train_test_split
-from sklearn.model_selection  import GridSearchCV, RandomizedSearchCV
-from sklearn.metrics          import accuracy_score, mean_absolute_error
-from sklearn.linear_model     import LinearRegression, LogisticRegression, Lasso
-from sklearn.base             import BaseEstimator
+from sklearn.model_selection  import GridSearchCV
+from sklearn.metrics          import mean_absolute_error
+from sklearn.linear_model     import LinearRegression, Lasso
 
+def importa_dados():
+    # Importando os dados
+    train = pd.read_csv('./../Dados/train.csv')
+    test = pd.read_csv('./../Dados/test.csv')
+
+    # Criando features
+    dataframes = [train, test]
+
+    # Criação de features
+    for df in dataframes:
+        df['volume']  = df.x * df.y * df.z
+        df['densidade'] = df.volume / df.n
+    
+    return train, test
+
+def prepara_fit(train, test):
+    
+    X = train.drop(columns = ['cent_price_cor', 'cent_trans_cor'], axis = 1)
+
+    y_price = train.cent_price_cor
+    y_trans = train.cent_trans_cor
+
+    # X_train, X_test, y_price_train, y_price_test = train_test_split(X,y_price,
+    #                                                     test_size = 0.25,
+    #                                                     random_state = 0)
+
+    # X_train, X_test, y_trans_train, y_trans_test = train_test_split(X,y_trans,
+    #                                                     test_size = 0.25,
+    #                                                     random_state = 0)
+
+    return X, y_price, y_trans
 
 def prever(X_train, X_test, y_train, y_test, target_name, components = [20,21,22,23,24,25,26,27,28]):
+    
+
+    params_grid = [ #Linear Regression
+                        {'normalize': ['True', 'False'],
+                        'fit_intercept': ['True', 'False']}
+
+                        #Lasso
+                        #,{'alpha':[0.02, 0.024, 0.025, 0.026, 0.03]} 
+                        ]
     
     lista_scores = []
     lista_PCA = []
@@ -31,7 +69,7 @@ def prever(X_train, X_test, y_train, y_test, target_name, components = [20,21,22
         LinearRegression(),
         #SVR(),
         #SVR(),
-        Lasso()
+        #Lasso()
         #XGBRegressor()
         ]
      
@@ -47,7 +85,7 @@ def prever(X_train, X_test, y_train, y_test, target_name, components = [20,21,22
 
             clf = GridSearchCV(model, param_grid = params_grid[i],
                                scoring = 'neg_mean_absolute_error', #destaque Ã  mÃ©trica pedida
-                               n_jobs=2, refit=True, cv=5, verbose=5,
+                               n_jobs=-1, refit=True, cv=5, verbose=6,
                                pre_dispatch='2*n_jobs', error_score='raise', 
                                return_train_score=True)
             
@@ -75,16 +113,29 @@ def prever(X_train, X_test, y_train, y_test, target_name, components = [20,21,22
             
     return df_scores
 
-def geral_resultados_submissao(test_price_pca, test_trans_pca, clf_price, clf_trans):
-
-    # pca_price = PCA(n_components = n_price)
-    # pca_trans = PCA(n_components = n_price)
-
-    # test_price_PCA = pca_price.fit_transform(test.drop("id", axis=1))
-    # test_trans_PCA = pca_trans.fit_transform(test.drop("id", axis=1))
+def gera_modelo(PCA_price, PCA_trans):
     
-    cent_price_cor = clf_price.predict(test_price_PCA)
-    cent_trans_cor = clf_trans.predict(test_trans_PCA)
+    pca_price = PCA(n_components = PCA_price)
+    pca_trans = PCA(n_components = PCA_trans)
+
+    train_price_pca = pca_price.fit_transform(X)
+    train_trans_pca = pca_trans.fit_transform(X)
+
+    clf_price = LinearRegression({'fit_intercept': 'True', 'normalize': 'True'})
+    clf_price.fit(train_price_pca, y_price)
+
+    clf_trans = LinearRegression({'fit_intercept': 'True', 'normalize': 'True'})
+    clf_trans.fit(train_trans_pca, y_trans)
+
+    test_price_pca = pca_price.fit_transform(test.drop("id", axis=1))
+    test_trans_pca = pca_trans.fit_transform(test.drop("id", axis=1))
+    
+    return test_price_pca, test_trans_pca, clf_trans, clf_price
+
+def geral_resultados_submissao(test_price_pca, test_trans_pca, clf_price, clf_trans):
+    
+    cent_price_cor = clf_price.predict(test_price_pca)
+    cent_trans_cor = clf_trans.predict(test_trans_pca)
 
 
     df_sub = pd.DataFrame({"cent_price_cor": cent_price_cor, "cent_trans_cor": cent_trans_cor})
@@ -92,90 +143,22 @@ def geral_resultados_submissao(test_price_pca, test_trans_pca, clf_price, clf_tr
     df_sub.to_csv("./../Submissoes/df_sub_{}.csv".format(datetime.now().strftime("%d-%m-%Y_%Hh%Mm%Ss")), index=False)
 
     return df_sub
-
-
-
-# Execucao do programa
-
-# Importando os dados
-train = pd.read_csv('./../Dados/train.csv')
-test = pd.read_csv('./../Dados/test.csv')
-
-dataframes = [train, test]
-
-for df in dataframes:
-    df['volume']  = df.x * df.y * df.z
-    df['densidade'] = df.volume / df.n
-
-X = train.drop(columns = ['cent_price_cor', 'cent_trans_cor'], axis = 1)
-
-y_price = train.cent_price_cor
-y_trans = train.cent_trans_cor
-
-
-
-
-X_train, X_test, y_price_train, y_price_test = train_test_split(X,y_price,
-                                                    test_size = 0.25,
-                                                    random_state = 0)
-
-X_train, X_test, y_trans_train, y_trans_test = train_test_split(X,y_trans,
-                                                    test_size = 0.25,
-                                                    random_state = 0)
-
-
-params_grid = [
-
-#Linear Regression
-{'normalize': ['True', 'False'],
-'fit_intercept': ['True', 'False']},
     
-#Lasso
-{'alpha':[0.02, 0.024, 0.025, 0.026, 0.03]}  
+#####################    Execução do programa     ####################### 
 
-]
+train, test = importa_dados()
 
-###
+X, y_price, y_trans = prepara_fit(train, test)
 
-#prever(X, X_test, y_trans, y_trans_test, "trans")
+df_scores = prever(X_train, X_test, y_train, y_test, target_name, components = [20,21,22,23,24,25,26,27,28])
 
-#print("\nPrevisao para o Price concluida \n")
+test_price_pca, test_trans_pca, clf_trans, clf_price = gera_modelo(pca_price, pca_trans)
 
-#prever(X, X_test, y_price, y_price_test, "price")
-
-###
-
-pca_price = PCA(n_components = 26)
-pca_trans = PCA(n_components = 28)
-
-train_price_PCA = pca_price.fit_transform(X)
-train_trans_PCA = pca_trans.fit_transform(X)
-
-clf_price = LinearRegression({'fit_intercept': 'True', 'normalize': 'True'})
-clf_price.fit(train_price_PCA, y_price)
-
-clf_trans = LinearRegression({'fit_intercept': 'True', 'normalize': 'True'})
-clf_trans.fit(train_trans_PCA, y_trans)
-
-test_price_PCA = pca_price.fit_transform(test.drop("id", axis=1))
-test_trans_PCA = pca_trans.fit_transform(test.drop("id", axis=1))
-
-
-# PRICE ==> PCA = 26 // Linear Reg
-
-# TRANS ==> PCA = 28 // Linear Reg
-
-df_sub = geral_resultados_submissao(test_price_PCA, test_trans_PCA, clf_price, clf_trans)
+df_sub = geral_resultados_submissao(test_price_pca, test_trans_pca, clf_price, clf_trans)
 
 print(df_sub)
 
 print("\nPrograma executado com sucesso \n")
-
-
-
-
-
-
 
 # Coletanea de parametros para o GridSearch
 
