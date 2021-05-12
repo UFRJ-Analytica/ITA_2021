@@ -36,20 +36,11 @@ def prepara_fit(train, test):
     
     X = train.drop(columns = ['cent_price_cor', 'cent_trans_cor'], axis = 1)
 
-    # y = train[["cent_price_cor","cent_trans_cor"]]
-
     y_price = train["cent_price_cor"]
     y_trans = train["cent_trans_cor"]
 
-    # X_train, X_test, y_train, y_test = train_test_split(X,y,
-    #                                                     test_size = 0.25,
-    #                                                     random_state = 0)
-
-    # y_test_price = y_test["cent_price_cor"]
-    # y_test_trans = y_test["cent_trans_cor"]
-
-
     return X, y_price, y_trans
+
 
 def prever(X, y, target_name, components = [20,21,22,23,24,25,26,27,28]):
     
@@ -121,6 +112,7 @@ def prever(X, y, target_name, components = [20,21,22,23,24,25,26,27,28]):
             
     return df_scores
 
+
 def gera_modelo(pca_price_n , pca_trans_n):
     
     pca_price = PCA(n_components = pca_price_n)
@@ -139,6 +131,7 @@ def gera_modelo(pca_price_n , pca_trans_n):
     test_trans_pca = pca_trans.fit_transform(test.drop("id", axis=1))
     
     return test_price_pca, test_trans_pca, clf_trans, clf_price
+    
 
 def geral_resultados_submissao(test_price_pca, test_trans_pca, clf_price, clf_trans):
     
