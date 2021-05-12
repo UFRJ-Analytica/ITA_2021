@@ -36,32 +36,38 @@ def prepara_fit(train, test):
     
     X = train.drop(columns = ['cent_price_cor', 'cent_trans_cor'], axis = 1)
 
-    y_price = train.cent_price_cor
-    y_trans = train.cent_trans_cor
+    # y = train[["cent_price_cor","cent_trans_cor"]]
 
-    # X_train, X_test, y_price_train, y_price_test = train_test_split(X,y_price,
+    y_price = train["cent_price_cor"]
+    y_trans = train["cent_trans_cor"]
+
+    # X_train, X_test, y_train, y_test = train_test_split(X,y,
     #                                                     test_size = 0.25,
     #                                                     random_state = 0)
 
-    # X_train, X_test, y_trans_train, y_trans_test = train_test_split(X,y_trans,
-    #                                                     test_size = 0.25,
-    #                                                     random_state = 0)
+    # y_test_price = y_test["cent_price_cor"]
+    # y_test_trans = y_test["cent_trans_cor"]
+
 
     return X, y_price, y_trans
 
-def prever(X_train, X_test, y_train, y_test, target_name, components = [20,21,22,23,24,25,26,27,28]):
+def prever(X, y, target_name, components = [20,21,22,23,24,25,26,27,28]):
     
+    X_train, X_test, y_train, y_test = train_test_split(X,y,
+                                                        test_size = 0.25,
+                                                        random_state = 0)
+
 
     params_grid = [ #Linear Regression
-                        {'normalize': ['True', 'False'],
-                        'fit_intercept': ['True', 'False']}
+                    {'normalize': ['True', 'False'],
+                    'fit_intercept': ['True', 'False']}
 
-                        #Lasso
-                        #,{'alpha':[0.02, 0.024, 0.025, 0.026, 0.03]} 
-                        ]
+                    #Lasso
+                    #,{'alpha':[0.02, 0.024, 0.025, 0.026, 0.03]} 
+                    ]
     
     lista_scores = []
-    lista_PCA = []
+    lista_pca = []
     lista_params = []
     lista_models = []
     
@@ -76,36 +82,38 @@ def prever(X_train, X_test, y_train, y_test, target_name, components = [20,21,22
     for n in components:
         
         pca = PCA(n_components = n)
-        X_train_PCA = pca.fit_transform(X_train)
-        X_test_PCA = pca.transform(X_test)
+        X_pca = pca.fit_transform(X)
+        X_train_pca = pca.fit_transform(X_train)
+        X_test_pca = pca.transform(X_test)
             
         for i, model in enumerate(models):
 
-            print(f"\n\nModelo: {model}\nComponent: {n}\n\n" + str(X_train_PCA.shape) + str(X_test_PCA.shape))
+            print(f"\n\nModelo: {model}\nComponent: {n}\n\n" + str(X_pca.shape) + str(X_pca.shape))
 
             clf = GridSearchCV(model, param_grid = params_grid[i],
-                               scoring = 'neg_mean_absolute_error', #destaque Ã  mÃ©trica pedida
-                               n_jobs=-1, refit=True, cv=5, verbose=6,
+                               scoring = 'neg_mean_absolute_error', #destaque a  metrica pedida
+                               n_jobs=-1, refit=True, cv=5, verbose=4,
                                pre_dispatch='2*n_jobs', error_score='raise', 
                                return_train_score=True)
             
-            clf.fit(X_train_PCA, y_train)
+            clf.fit(X_train_pca, y_train)
 
-            pred_cv = clf.predict(X_test_PCA)
+            pred_cv = clf.predict(X_test_pca)
             score_cv = mean_absolute_error(y_test, pred_cv)
+
             print(f"Melhores parametros: {clf.best_params_}")
             print(f"\nScore Grid: {score_cv}")
             
             lista_params.append(clf.best_params_)
             lista_models.append(model)
             lista_scores.append(round(score_cv,15))
-            lista_PCA.append(n)
+            lista_pca.append(n)
 
     print("Exportando DataFrame de Scores\n")
 
     df_scores = pd.DataFrame()
     
-    df_scores.insert(loc=0, column='PCA', value= pd.Series(lista_PCA))
+    df_scores.insert(loc=0, column='PCA', value= pd.Series(lista_pca))
     df_scores.insert(loc=0, column='Scores', value= pd.Series(lista_scores))
     df_scores.insert(loc=0, column='Params', value= pd.Series(lista_params))
     df_scores.insert(loc=0, column='Model', value= pd.Series(lista_models))
@@ -113,10 +121,10 @@ def prever(X_train, X_test, y_train, y_test, target_name, components = [20,21,22
             
     return df_scores
 
-def gera_modelo(PCA_price, PCA_trans):
+def gera_modelo(pca_price_n , pca_trans_n):
     
-    pca_price = PCA(n_components = PCA_price)
-    pca_trans = PCA(n_components = PCA_trans)
+    pca_price = PCA(n_components = pca_price_n)
+    pca_trans = PCA(n_components = pca_trans_n)
 
     train_price_pca = pca_price.fit_transform(X)
     train_trans_pca = pca_trans.fit_transform(X)
@@ -150,9 +158,13 @@ train, test = importa_dados()
 
 X, y_price, y_trans = prepara_fit(train, test)
 
-df_scores = prever(X_train, X_test, y_train, y_test, target_name, components = [20,21,22,23,24,25,26,27,28])
+df_scores_price = prever(X, y_price, "price", components = [20,21,22,23,24,25,26,27,28])
+df_scores_trans = prever(X, y_trans, "trans", components = [20,21,22,23,24,25,26,27,28])
 
-test_price_pca, test_trans_pca, clf_trans, clf_price = gera_modelo(pca_price, pca_trans)
+pca_price_n = len(X.columns)
+pca_trans_n = len(X.columns)
+
+test_price_pca, test_trans_pca, clf_trans, clf_price = gera_modelo(pca_price_n, pca_trans_n)
 
 df_sub = geral_resultados_submissao(test_price_pca, test_trans_pca, clf_price, clf_trans)
 
